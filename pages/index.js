@@ -1,3 +1,4 @@
+import Feed from "@/components/Feed";
 import Header from "@/components/Header";
 import Head from "next/head";
 
@@ -10,14 +11,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="">
+      <div className="bg-gray-50 min-h-screen">
         {/* Header */}
         <Header />
 
         {/* Feed */}
-
+        <Feed />
         {/* Modal */}
-      </main>
+      </div>
     </>
   );
 }
