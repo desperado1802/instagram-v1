@@ -57,7 +57,6 @@ export default function Header() {
           ) : (
             <button onClick={signIn}>Sign In</button>
           )}
-          <PlusCircleIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
         </div>
       </div>
     </div>
