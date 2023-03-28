@@ -5,10 +5,12 @@ import { HomeIcon } from "@heroicons/react/solid";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRecoilState } from "recoil";
 import { modalState } from "@/atom/modalAtom";
+import { useRouter } from "next/router";
 
 export default function Header() {
   const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
+  const router = useRouter();
 
   return (
     <div className="shadow-sm border-b sticky top-0 bg-white z-50 py-5 lg:py-0">
@@ -16,6 +18,7 @@ export default function Header() {
         {/* Left */}
         <div className="h-24 w-24 relative hidden lg:inline-grid cursor-pointer">
           <Image
+            onClick={() => router.push("/")}
             alt="logo"
             src="https://techcrunch.com/wp-content/uploads/2014/06/instagram_topic.png"
             layout="fill"
@@ -24,6 +27,7 @@ export default function Header() {
         </div>
         <div className="h-10 w-10 relative  lg:hidden cursor-pointer">
           <Image
+            onClick={() => router.push("/")}
             alt="logo"
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/1200px-Instagram_logo_2016.svg.png"
             layout="fill"
@@ -46,7 +50,10 @@ export default function Header() {
 
         {/* Right */}
         <div className="flex space-x-4 items-center">
-          <HomeIcon className="h-6 hidden md:inline-flex cursor-pointer hover:scale-125 transition-transform duration-200 ease-out" />
+          <HomeIcon
+            onClick={() => router.push("/")}
+            className="h-6 hidden md:inline-flex cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
+          />
           {session ? (
             <>
               <PlusCircleIcon
