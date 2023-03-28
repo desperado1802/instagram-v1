@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   DotsHorizontalIcon,
   HeartIcon,
@@ -7,9 +7,25 @@ import {
   EmojiHappyIcon,
 } from "@heroicons/react/outline";
 import { useSession } from "next-auth/react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/firebase";
 
 export default function Post({ username, userImg, img, caption, id }) {
   const { data: session } = useSession();
+  const [comment, setComment] = useState("");
+
+  async function sendComment(e) {
+    e.preventDefault();
+    const commentToSend = comment;
+    setComment("");
+    await addDoc(collection(db, "posts", id, "comments"), {
+      comment: commentToSend,
+      username: session.user.username,
+      userImg: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+  }
+
   return (
     <div className="bg-white my-7 border rounded-md">
       {/* Post Header */}
@@ -49,8 +65,17 @@ export default function Post({ username, userImg, img, caption, id }) {
             className="border-none flex-1 focus:ring-0"
             type="text"
             placeholder="Enter your comment..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
           />
-          <button className="text-blue-400 font-bold">Post</button>
+          <button
+            type="submit"
+            disabled={!comment.trim()}
+            className="text-blue-400 font-bold disabled:text-blue-200"
+            onClick={sendComment}
+          >
+            Post
+          </button>
         </form>
       )}
     </div>
