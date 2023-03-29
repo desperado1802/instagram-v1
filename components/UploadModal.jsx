@@ -32,6 +32,7 @@ export default function UploadModal() {
       username: session.user.username,
       profileImg: session.user.image,
       timestamp: serverTimestamp(),
+      userId: session.user.uid,
     });
 
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
@@ -63,7 +64,7 @@ export default function UploadModal() {
     <div>
       {open && (
         <Modal
-          className="max-w-lg w-[90%] p-6 absolute top-56 left-[50%] translate-x-[-50%] bg-white border-2 rounded-md shadow-md"
+          className="max-w-lg w-[90%] p-6 absolute top-[10%] sm:top-[15%] left-[50%] translate-x-[-50%] bg-white border-2 rounded-md shadow-md"
           isOpen={open}
           onRequestClose={() => {
             setOpen(false);

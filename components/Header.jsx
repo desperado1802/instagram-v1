@@ -58,7 +58,7 @@ export default function Header() {
             <>
               <PlusCircleIcon
                 onClick={() => setOpen(true)}
-                className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out"
+                className="h-6 cursor-pointer hover:scale-125 p-0 transition-transform duration-200 ease-out"
               />
               <img
                 onClick={signOut}

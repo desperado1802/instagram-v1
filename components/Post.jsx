@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   DotsHorizontalIcon,
   HeartIcon,
   ChatIcon,
   BookmarkIcon,
   EmojiHappyIcon,
+  TrashIcon,
 } from "@heroicons/react/outline";
 import { HeartIcon as HeartIconFilled } from "@heroicons/react/solid";
 import { useSession } from "next-auth/react";
@@ -19,15 +20,18 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db, storage } from "@/firebase";
 import Moment from "react-moment";
+import { deleteObject, ref } from "firebase/storage";
 
-export default function Post({ username, userImg, img, caption, id }) {
+export default function Post({ username, userImg, img, caption, id, userId }) {
   const { data: session } = useSession();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState([]);
   const [hasLiked, setHasLiked] = useState(false);
+  const [deleteButton, setDeleteButton] = useState(false);
+  const deleteButtonRef = useRef(null);
 
   async function sendComment(e) {
     e.preventDefault();
@@ -78,18 +82,58 @@ export default function Post({ username, userImg, img, caption, id }) {
     );
   }, [db, id]);
 
+  async function deletePost() {
+    if (
+      window.confirm("Are yo sure you want to delete this post?") &&
+      session.user.uid === userId
+    ) {
+      await deleteDoc(doc(db, "posts", id));
+      await deleteObject(ref(storage, `posts/${id}/image`));
+    }
+  }
+
+  useEffect(() => {
+    function handleClickOutsideDeleteButton(event) {
+      if (
+        deleteButtonRef.current &&
+        !deleteButtonRef.current.contains(event.target)
+      ) {
+        setDeleteButton(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutsideDeleteButton);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideDeleteButton);
+    };
+  }, [deleteButtonRef]);
+
   return (
     <div className="bg-white my-7 border rounded-md">
       {/* Post Header */}
 
-      <div className="flex items-center p-5">
+      <div className="flex items-center p-5 relative">
         <img
           className="h-12 w-12 rounded-full object-cover border p-1 mr-3"
           src={userImg}
           alt={username}
         />
         <p className="font-bold flex-1">{username}</p>
-        <DotsHorizontalIcon className="h-5 " />
+        <DotsHorizontalIcon
+          onClick={() => setDeleteButton(!deleteButton)}
+          className="h-5 cursor-pointer"
+        />
+        {deleteButton && session.user.uid === userId && (
+          <div
+            ref={deleteButtonRef}
+            onClick={deletePost}
+            className="bg-white border hover:bg-gray-50 border-gray-300 absolute bottom-[-6px] right-5 flex items-center p-2 cursor-pointer rounded-md"
+          >
+            <TrashIcon className="btn text-red-500" />
+            <p className="text-red-500">Delete Post</p>
+          </div>
+        )}
       </div>
       {/* Post Image */}
       <img className="object-cover w-full" src={img} alt="insta-image" />
